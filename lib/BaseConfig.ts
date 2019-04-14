@@ -1,8 +1,9 @@
 import * as dotProp from "dot-prop";
 import * as dotenv from "dotenv";
-import * as fs from 'fs-extra';
 import { Logger, LoggerInstance } from 'nano-errors';
+import * as fs from 'fs-extra';
 import * as path from 'path';
+import { BaseConfigStorage, EnvConfigStorage } from "./storage";
 
 export interface BaseConfigData {
   [key: string]: any;
@@ -14,54 +15,34 @@ export interface BaseConfigOptions {
   logger?: LoggerInstance;
   debug?: boolean;
   data?: BaseConfigData;
+  storage?: BaseConfigStorage;
 }
 
 export class BaseConfig {
   protected logger: LoggerInstance;
   protected data: BaseConfigData = {};
+  protected storage: BaseConfigStorage;
 
   constructor(public options: BaseConfigOptions) {
     this.options.basePath = options.basePath || path.join(process.cwd(), './config/env');
     this.logger = options.logger || Logger.getInstance();
     this.data = options.data || this.data;
+    this.storage = options.storage || new EnvConfigStorage({ 
+      logger: this.logger,
+      name: this.options.name,
+      basePath: this.options.basePath 
+    });
   }
 
   public get<Type = any>(key: string): Type {
     return dotProp.get(this.data, key);
   }
 
-  public loadSync(): boolean {
-    const envPath = path.join(this.options.basePath, `${this.options.name}.env`);
-
-    if (fs.existsSync(envPath)) {
-      const result = dotenv.config({ path: envPath, debug: !!this.options.debug });
-      this.logger.debug(`Environment config loaded successfully from "${this.options.name}.env"`, {
-        basePath: this.options.basePath,
-        debug: this.options.debug,
-        result: result.parsed,
-      });
-      this.data = { ...this.data, ...result.parsed };
-      return true;
-    }
-
-    this.logger.warn(`Could not locate environment file at "${this.options.name}.env"`);
-    return false;
+  public loadSync(): void {
+    this.data = this.storage.loadSync();
   }
 
-  public async dump(overrideName?: string) {
-    const name = overrideName || this.options.name;
-    const filePath = path.join(this.options.basePath, `${name}.env`);
-
-    await fs.ensureDir(this.options.basePath);
-    await fs.ensureFile(filePath);
-
-    let raw = "";
-
-    for (const key in this.data) {
-      raw += `${key}=${this.data[key]}\n`;
-    }
-
-    this.logger.info(`Writing config file "${name}.env"`, { basePath: this.options.basePath });
-    await fs.writeFile(filePath, raw);
+  public async dump(overrideName?: string, overridePath?: string): Promise<void> {
+    await this.storage.dump(this.data, overrideName, overridePath);
   }
 }
