@@ -1,26 +1,26 @@
 import * as fs from 'fs-extra';
 import { Logger, LoggerInstance } from 'nano-errors';
 import * as path from 'path';
-import { BaseConfigData } from '../BaseConfig';
+import { NanoConfigData } from './NanoConfig';
 
-export interface BaseConfigStorageOptions {
+export interface NanoConfigStorageOptions {
   name: string;
   basePath: string;
   logger?: LoggerInstance;
 }
 
-export abstract class BaseConfigStorage {
+export abstract class NanoConfigStorage {
   public logger: LoggerInstance;
   public abstract readonly type: string;
   public abstract readonly extension: string;
 
-  constructor(public options: BaseConfigStorageOptions) {
+  constructor(public options: NanoConfigStorageOptions) {
     this.logger = options.logger || Logger.getInstance();
   }
 
-  public abstract loadSync(name?: string, path?: string): BaseConfigData;
+  public abstract loadSync(name?: string, path?: string): NanoConfigData;
 
-  public abstract async dump(data: BaseConfigData, name?: string, path?: string): Promise<void>;
+  public abstract async dump(data: NanoConfigData, name?: string, path?: string): Promise<void>;
 
   protected readSync(overrideName?: string, overridePath?: string): string | undefined {
     const name = overrideName || this.options.name;
@@ -29,14 +29,17 @@ export abstract class BaseConfigStorage {
 
     if (fs.existsSync(filePath)) {
       const result = fs.readFileSync(filePath).toString('utf-8');
-      this.logger.debug(`Environment config loaded successfully from "${this.options.name}.env"`, {
-        result,
-        basePath: this.options.basePath,
+      this.logger.debug(`Config file loaded successfully from "${fileName}"`, {
+        fileName,
+        filePath,
       });
       return result;
     }
 
-    this.logger.warn(`Could not locate environment file at "${fileName}"`);
+    this.logger.warn(`Could not locate config file at "${fileName}"`, {
+      fileName,
+      filePath,
+    });
     return undefined;
   }
 
@@ -48,11 +51,11 @@ export abstract class BaseConfigStorage {
     await fs.ensureDir(this.options.basePath);
     await fs.ensureFile(filePath);
 
-    this.logger.info(`Writing config file '${name}.${this.extension}'`, { 
+    this.logger.info(`Writing config file '${name}.${this.extension}'`, {
       fileName,
-      basePath: this.options.basePath 
+      basePath: this.options.basePath
     });
-    
+
     await fs.writeFile(filePath, raw);
   }
 }

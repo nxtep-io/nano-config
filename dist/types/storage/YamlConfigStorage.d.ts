@@ -1,8 +1,8 @@
-import { BaseConfigData } from "../BaseConfig";
-import { BaseConfigStorage } from "./BaseConfigStorage";
-export declare class YamlConfigStorage extends BaseConfigStorage {
+import { NanoConfigData } from "../NanoConfig";
+import { NanoConfigStorage } from "../NanoConfigStorage";
+export declare class YamlConfigStorage extends NanoConfigStorage {
     readonly type = "YAML";
     readonly extension = "yaml";
-    loadSync(): BaseConfigData;
-    dump(data: BaseConfigData, overrideName?: string, overridePath?: string): Promise<void>;
+    loadSync(): NanoConfigData;
+    dump(data: NanoConfigData, overrideName?: string, overridePath?: string): Promise<void>;
 }

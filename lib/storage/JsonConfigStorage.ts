@@ -1,16 +1,16 @@
-import { BaseConfigData } from "../BaseConfig";
-import { BaseConfigStorage } from "./BaseConfigStorage";
+import { NanoConfigData } from "../NanoConfig";
+import { NanoConfigStorage } from "../NanoConfigStorage";
 
-export class JsonConfigStorage extends BaseConfigStorage {
+export class JsonConfigStorage extends NanoConfigStorage {
   readonly type = 'JSON';
   readonly extension = 'json';
 
-  public loadSync(): BaseConfigData {
+  public loadSync(): NanoConfigData {
     const raw = this.readSync();
     return raw ? JSON.parse(raw) : {};
   }
 
-  public async dump(data: BaseConfigData, overrideName?: string, overridePath?: string): Promise<void> {
+  public async dump(data: NanoConfigData, overrideName?: string, overridePath?: string): Promise<void> {
     await this.write(JSON.stringify(data, null, 2), overrideName, overridePath);
   }
 }

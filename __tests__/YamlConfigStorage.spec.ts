@@ -1,9 +1,15 @@
 import { Logger } from 'nano-errors';
 import * as path from 'path';
-import { BaseConfig, YamlConfigStorage } from "../lib";
+import { NanoConfig, YamlConfigStorage } from "../lib";
 
 describe("lib.config.YamlConfigStorage", async () => {
   Logger.initialize();
+  const originalEnv = { ...process.env };
+
+  afterEach(() => {
+    // Reset process state
+    process.env = { ...originalEnv };
+  });
 
   it("should load a YamlConfigStorage properly from env synchronously", () => {
     const configFile = {
@@ -11,15 +17,42 @@ describe("lib.config.YamlConfigStorage", async () => {
       basePath: path.join(process.cwd(), '__tests__/files'),
     };
 
-    const config = new BaseConfig({
-      debug: true,
+    const config = new NanoConfig({
       ...configFile,
-      storage: new YamlConfigStorage({ ...configFile })
+      storage: new YamlConfigStorage({ ...configFile }),
+      schema: {
+        TEST: {
+          format: String,
+          default: null,
+        }
+      }
     });
 
     config.loadSync();
     expect(config.get('TEST')).toBe('123456');
   });
+
+  it("should not fail a YamlConfigStorage without a source file", () => {
+    const configFile = {
+      name: 'unknown_file_123',
+      basePath: path.join(process.cwd(), '__tests__/files'),
+    };
+
+    const config = new NanoConfig({
+      ...configFile,
+      storage: new YamlConfigStorage({ ...configFile }),
+      schema: {
+        TEST: {
+          format: String,
+          default: null,
+        }
+      }
+    });
+
+    config.loadSync();
+    expect(config.get('TEST')).toBeFalsy();
+  });
+
 
   it("should dump a YamlConfigStorage properly from env and then reload it", async () => {
     const configFile = {
@@ -27,10 +60,15 @@ describe("lib.config.YamlConfigStorage", async () => {
       basePath: path.join(process.cwd(), '__tests__/files'),
     };
 
-    const config = new BaseConfig({
-      debug: true,
+    const config = new NanoConfig({
       ...configFile,
-      storage: new YamlConfigStorage({ ...configFile })
+      storage: new YamlConfigStorage({ ...configFile }),
+      schema: {
+        TEST: {
+          format: String,
+          default: null,
+        }
+      }
     });
 
     config.loadSync();
@@ -44,10 +82,15 @@ describe("lib.config.YamlConfigStorage", async () => {
       basePath: path.join(process.cwd(), './.env'),
     };
 
-    const loadedConfig = new BaseConfig({
-      debug: true,
+    const loadedConfig = new NanoConfig({
       ...loadedConfigFile,
-      storage: new YamlConfigStorage({ ...loadedConfigFile })
+      storage: new YamlConfigStorage({ ...loadedConfigFile }),
+      schema: {
+        TEST: {
+          format: String,
+          default: null,
+        }
+      }
     });
 
     loadedConfig.loadSync();

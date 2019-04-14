@@ -1,9 +1,15 @@
 import { Logger } from 'nano-errors';
 import * as path from 'path';
-import { BaseConfig, JsonConfigStorage } from "../lib";
+import { NanoConfig, JsonConfigStorage } from "../lib";
 
 describe("lib.config.JsonConfigStorage", async () => {
   Logger.initialize();
+  const originalEnv = { ...process.env };
+
+  afterEach(() => {
+    // Reset process state
+    process.env = { ...originalEnv };
+  });
 
   it("should load a JsonConfigStorage properly from env synchronously", () => {
     const configFile = {
@@ -11,14 +17,40 @@ describe("lib.config.JsonConfigStorage", async () => {
       basePath: path.join(process.cwd(), '__tests__/files'),
     };
 
-    const config = new BaseConfig({
-      debug: true,
+    const config = new NanoConfig({
       ...configFile,
-      storage: new JsonConfigStorage({ ...configFile })
+      storage: new JsonConfigStorage({ ...configFile }),
+      schema: {
+        TEST: {
+          format: String,
+          default: null,
+        }
+      }
     });
 
     config.loadSync();
     expect(config.get('TEST')).toBe('123456');
+  });
+
+  it("should not fail a JsonConfigStorage without a source file", () => {
+    const configFile = {
+      name: 'unknown_file_123',
+      basePath: path.join(process.cwd(), '__tests__/files'),
+    };
+
+    const config = new NanoConfig({
+      ...configFile,
+      storage: new JsonConfigStorage({ ...configFile }),
+      schema: {
+        TEST: {
+          format: String,
+          default: null,
+        }
+      }
+    });
+
+    config.loadSync();
+    expect(config.get('TEST')).toBeFalsy();
   });
 
   it("should dump a JsonConfigStorage properly from env and then reload it", async () => {
@@ -27,10 +59,15 @@ describe("lib.config.JsonConfigStorage", async () => {
       basePath: path.join(process.cwd(), '__tests__/files'),
     };
 
-    const config = new BaseConfig({
-      debug: true,
+    const config = new NanoConfig({
       ...configFile,
-      storage: new JsonConfigStorage({ ...configFile })
+      storage: new JsonConfigStorage({ ...configFile }),
+      schema: {
+        TEST: {
+          format: String,
+          default: null,
+        }
+      }
     });
 
     config.loadSync();
@@ -44,10 +81,15 @@ describe("lib.config.JsonConfigStorage", async () => {
       basePath: path.join(process.cwd(), './.env'),
     };
 
-    const loadedConfig = new BaseConfig({
-      debug: true,
+    const loadedConfig = new NanoConfig({
       ...loadedConfigFile,
-      storage: new JsonConfigStorage({ ...loadedConfigFile })
+      storage: new JsonConfigStorage({ ...loadedConfigFile }),
+      schema: {
+        TEST: {
+          format: String,
+          default: null,
+        }
+      }
     });
 
     loadedConfig.loadSync();
