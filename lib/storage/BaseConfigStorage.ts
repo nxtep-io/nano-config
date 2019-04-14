@@ -11,8 +11,8 @@ export interface BaseConfigStorageOptions {
 
 export abstract class BaseConfigStorage {
   public logger: LoggerInstance;
-  public abstract type: string;
-  public abstract extension: string;
+  public abstract readonly type: string;
+  public abstract readonly extension: string;
 
   constructor(public options: BaseConfigStorageOptions) {
     this.logger = options.logger || Logger.getInstance();

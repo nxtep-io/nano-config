@@ -8,8 +8,8 @@ export interface BaseConfigStorageOptions {
 export declare abstract class BaseConfigStorage {
     options: BaseConfigStorageOptions;
     logger: LoggerInstance;
-    abstract type: string;
-    abstract extension: string;
+    abstract readonly type: string;
+    abstract readonly extension: string;
     constructor(options: BaseConfigStorageOptions);
     abstract loadSync(name?: string, path?: string): BaseConfigData;
     abstract dump(data: BaseConfigData, name?: string, path?: string): Promise<void>;

@@ -5,26 +5,26 @@ import { BaseConfigData } from "../BaseConfig";
 import { BaseConfigStorage } from "./BaseConfigStorage";
 
 export class EnvConfigStorage extends BaseConfigStorage {
-  type = 'ENV';
-  extension = 'env';
+  readonly type = 'ENV';
+  readonly extension = 'env';
 
   public loadSync(): BaseConfigData {
-    const envPath = path.join(this.options.basePath, `${this.options.name}.env`);
+    const envPath = path.join(this.options.basePath, `${this.options.name}.${this.extension}`);
 
     if (fs.existsSync(envPath)) {
       // TODO: Pass debug as constructor argument
       const result = dotenv.config({ path: envPath, debug: true });
       
-      this.logger.debug(`Environment config loaded successfully from "${this.options.name}.env"`, {
+      this.logger.debug(`Environment config loaded successfully from "${this.options.name}.${this.extension}"`, {
         basePath: this.options.basePath,
         result: result.parsed,
       });
 
-      return { ...result.parsed };
+      return { ...result.parsed } as BaseConfigData;
     }
 
-    this.logger.warn(`Could not locate environment file at "${this.options.name}.env"`);
-    return {};
+    this.logger.warn(`Could not locate environment file at "${this.options.name}.${this.extension}"`);
+    return {} as BaseConfigData;
   }
 
   public async dump(data: BaseConfigData, overrideName?: string, overridePath?: string): Promise<void> {

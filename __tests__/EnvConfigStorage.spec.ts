@@ -2,10 +2,10 @@ import { Logger } from 'nano-errors';
 import * as path from 'path';
 import { BaseConfig } from "../lib";
 
-describe("lib.config.BaseConfig", async () => {
+describe("lib.config.EnvConfigStorage", async () => {
   Logger.initialize();
 
-  it("should load a BaseConfig properly from env synchronously", () => {
+  it("should load a EnvConfigStorage properly from env synchronously", () => {
     const config = new BaseConfig({
       debug: true,
       name: 'test',
@@ -16,7 +16,7 @@ describe("lib.config.BaseConfig", async () => {
     expect(process.env).toHaveProperty('TEST', '123456');
   });
 
-  it("should dump a BaseConfig properly from env and then reload it", async () => {
+  it("should dump a EnvConfigStorage properly from env and then reload it", async () => {
     const config = new BaseConfig({
       debug: true,
       name: 'test',
