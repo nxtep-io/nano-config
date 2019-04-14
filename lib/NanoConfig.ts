@@ -87,7 +87,7 @@ export class NanoConfig<Data extends NanoConfigData = { env?: string }> {
 
   public set<Type = any>(key: string, data: Type): void {
     this.convict.set(key, data as any);
-    this.convict.validate({ strict: false })
+    this.convict.validate({ allowed: 'warn' })
   }
 
   public loadSync(): void {
