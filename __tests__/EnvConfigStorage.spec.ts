@@ -9,7 +9,7 @@ describe("lib.config.BaseConfig", async () => {
     const config = new BaseConfig({
       debug: true,
       name: 'test',
-      basePath: path.join(process.cwd(), '__tests__/'),
+      basePath: path.join(process.cwd(), '__tests__/files'),
     });
     config.loadSync();
     expect(config.get('TEST')).toBe('123456');
@@ -20,7 +20,7 @@ describe("lib.config.BaseConfig", async () => {
     const config = new BaseConfig({
       debug: true,
       name: 'test',
-      basePath: path.join(process.cwd(), '__tests__/'),
+      basePath: path.join(process.cwd(), '__tests__/files'),
     });
 
     config.loadSync();

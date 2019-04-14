@@ -11,7 +11,7 @@ describe("lib.config.Convict", async () => {
     const config = new BaseConfig<TestConfigData>({
       debug: true,
       name: 'convict',
-      basePath: path.join(process.cwd(), '__tests__/'),
+      basePath: path.join(process.cwd(), '__tests__/files'),
       schema: {
         test: { format: 'int', default: '' as any }
       }

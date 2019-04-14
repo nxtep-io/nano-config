@@ -8,7 +8,7 @@ describe("lib.config.BaseConfig", async () => {
   it("should load a BaseConfig properly from env synchronously", () => {
     const configFile = {
       name: 'test',
-      basePath: path.join(process.cwd(), '__tests__/'),
+      basePath: path.join(process.cwd(), '__tests__/files'),
     };
 
     const config = new BaseConfig({
@@ -24,7 +24,7 @@ describe("lib.config.BaseConfig", async () => {
   it("should dump a BaseConfig properly from env and then reload it", async () => {
     const configFile = {
       name: 'test',
-      basePath: path.join(process.cwd(), '__tests__/'),
+      basePath: path.join(process.cwd(), '__tests__/files'),
     };
 
     const config = new BaseConfig({
