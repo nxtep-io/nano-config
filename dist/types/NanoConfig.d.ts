@@ -12,7 +12,7 @@ export interface NanoEnvFile {
     envBasePath?: string;
 }
 export interface NanoConfigOptions<Data extends NanoConfigData = {
-    env: string;
+    env?: string;
 }> {
     name: string;
     basePath?: string;
@@ -21,7 +21,7 @@ export interface NanoConfigOptions<Data extends NanoConfigData = {
     schema?: Partial<NanoConfigSchema<Data>>;
 }
 export declare class NanoConfig<Data extends NanoConfigData = {
-    env: string;
+    env?: string;
 }> {
     options: NanoConfigOptions<Data>;
     logger: LoggerInstance;
@@ -29,7 +29,7 @@ export declare class NanoConfig<Data extends NanoConfigData = {
     protected convict: convict.Config<Data>;
     constructor(options: NanoConfigOptions<Data>);
     static environment<Data extends NanoConfigData = {
-        env: string;
+        env?: string;
     }>(options: NanoConfigOptions<Data> & NanoEnvFile): NanoConfig<Data>;
     get(key?: string): Data;
     set<Type = any>(key: string, data: Type): void;

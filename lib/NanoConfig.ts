@@ -19,7 +19,7 @@ export interface NanoEnvFile {
   envBasePath?: string
 }
 
-export interface NanoConfigOptions<Data extends NanoConfigData = { env: string }> {
+export interface NanoConfigOptions<Data extends NanoConfigData = { env?: string }> {
   name: string;
   basePath?: string;
   logger?: LoggerInstance;
@@ -27,7 +27,7 @@ export interface NanoConfigOptions<Data extends NanoConfigData = { env: string }
   schema?: Partial<NanoConfigSchema<Data>>
 }
 
-export class NanoConfig<Data extends NanoConfigData = { env: string }> {
+export class NanoConfig<Data extends NanoConfigData = { env?: string }> {
   public logger: LoggerInstance;
   protected storage: NanoConfigStorage;
   protected convict: convict.Config<Data>;
@@ -44,18 +44,17 @@ export class NanoConfig<Data extends NanoConfigData = { env: string }> {
     });
 
     // Prepare configuration convict
-    this.convict = convict<Data>({
+    this.convict = convict<Data>(this.options.schema as any || {
       env: {
         doc: '',
         format: ['production', 'development', 'test'],
         default: 'development',
         env: 'NODE_ENV'
       },
-      ...this.options.schema,
     });
   }
 
-  public static environment<Data extends NanoConfigData = { env: string }>
+  public static environment<Data extends NanoConfigData = { env?: string }>
     (options: NanoConfigOptions<Data> & NanoEnvFile): NanoConfig<Data> {
     const envBasePath = options.envBasePath || options.basePath || process.cwd();
     const envName = `${options.envName || options.name}.env`;
