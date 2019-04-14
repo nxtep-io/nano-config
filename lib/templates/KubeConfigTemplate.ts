@@ -32,6 +32,17 @@ export class KubeConfigTemplate<Data extends NanoConfigData> extends NanoConfigT
       metadata: { labels, ...otherMetadata } = {} as any
     } = this.options;
 
+    const data = {} as any;
+    const raw = this.get();
+
+    for (const key in raw) {
+      if (kind === 'Secret') {
+        data[key] = Buffer.from(raw[key]).toString('base64');
+      } else {
+        data[key] = raw[key];
+      }
+    }
+
     return {
       apiVersion,
       kind,
@@ -43,7 +54,8 @@ export class KubeConfigTemplate<Data extends NanoConfigData> extends NanoConfigT
         },
         ...otherMetadata,
       },
-      data: this.get(),
+      // tslint:disable-next-line:object-shorthand-properties-first
+      data,
     }
   }
 }
