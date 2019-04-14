@@ -11,7 +11,7 @@ export declare abstract class BaseConfigStorage {
     abstract type: string;
     abstract extension: string;
     constructor(options: BaseConfigStorageOptions);
-    abstract loadSync(name?: string, path?: string): void;
+    abstract loadSync(name?: string, path?: string): BaseConfigData;
     abstract dump(data: BaseConfigData, name?: string, path?: string): Promise<void>;
     protected readSync(overrideName?: string, overridePath?: string): string | undefined;
     protected write(raw: string, overrideName?: string, overridePath?: string): Promise<void>;

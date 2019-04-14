@@ -39,7 +39,6 @@
     "@types/dotenv": "^6.1.1",
     "@types/fs-extra": "^5.0.5",
     "convict": "^4.4.1",
-    "dot-prop": "^5.0.0",
     "dotenv": "^7.0.0",
     "fs-extra": "^7.0.1",
     "nano-errors": "nxtep-io/nano-errors"

@@ -1205,13 +1205,6 @@ dot-prop@^4.1.0:
   dependencies:
     is-obj "^1.0.0"
 
-dot-prop@^5.0.0:
-  version "5.0.0"
-  resolved "https://yarn.btcore.app/dot-prop/-/dot-prop-5.0.0.tgz#64b7968af349c3a9f966aa12658dbd5829f6b953"
-  integrity sha512-RTmaF2jx3nOBO2GvtFqjnDLycjFUMqt+2pwRx7JVYa81lDauoj9aNkyrJI2ikR58FbBIchiIlRiGG+muLJ4oHQ==
-  dependencies:
-    is-obj "^1.0.0"
-
 dotenv@^7.0.0:
   version "7.0.0"
   resolved "https://yarn.btcore.app/dotenv/-/dotenv-7.0.0.tgz#a2be3cd52736673206e8a85fb5210eea29628e7c"

@@ -36,9 +36,7 @@ describe("lib.config.BaseConfig", async () => {
     config.loadSync();
     expect(config.get('TEST')).toBe('123456');
 
-    // TODO: Create a setter
-    config['data']['TEST'] = '654321';
-
+    config.set('TEST', '654321');
     await config.dump('test_output', path.join(process.cwd(), './.env'));
 
     const loadedConfigFile = {

@@ -1,48 +1,65 @@
-import * as dotProp from "dot-prop";
-import * as dotenv from "dotenv";
+import * as convict from 'convict';
 import { Logger, LoggerInstance } from 'nano-errors';
-import * as fs from 'fs-extra';
 import * as path from 'path';
-import { BaseConfigStorage, EnvConfigStorage } from "./storage";
+import { BaseConfigStorage, EnvConfigStorage } from './storage';
 
 export interface BaseConfigData {
+  env: string;
   [key: string]: any;
 }
 
-export interface BaseConfigOptions {
+export interface BaseConfigOptions<Data extends BaseConfigData = { env: string }> {
   name: string;
   basePath?: string;
   logger?: LoggerInstance;
   debug?: boolean;
-  data?: BaseConfigData;
   storage?: BaseConfigStorage;
+  schema?: Partial<convict.Schema<Data>>
 }
 
-export class BaseConfig {
+export class BaseConfig<Data extends BaseConfigData = { env: string }> {
   protected logger: LoggerInstance;
-  protected data: BaseConfigData = {};
   protected storage: BaseConfigStorage;
+  protected convict: convict.Config<Data>;
 
-  constructor(public options: BaseConfigOptions) {
+  constructor(public options: BaseConfigOptions<Data>) {
     this.options.basePath = options.basePath || path.join(process.cwd(), './config/env');
     this.logger = options.logger || Logger.getInstance();
-    this.data = options.data || this.data;
-    this.storage = options.storage || new EnvConfigStorage({ 
+
+    // Prepare configuratino storage
+    this.storage = options.storage || new EnvConfigStorage({
       logger: this.logger,
       name: this.options.name,
-      basePath: this.options.basePath 
+      basePath: this.options.basePath
+    });
+
+    // Prepare configuration convict
+    this.convict = convict<any>({
+      env: {
+        doc: '',
+        format: ['production', 'development', 'test'],
+        default: 'development',
+        env: 'NODE_ENV'
+      },
+      ...this.options.schema,
     });
   }
 
+  public get(key?: string): Data;
   public get<Type = any>(key: string): Type {
-    return dotProp.get(this.data, key);
+    return this.convict.get(key);
+  }
+
+  public set<Type = any>(key: string, data: Type): void {
+    this.convict.set(key, data as any);
+    this.convict.validate({ strict: false })
   }
 
   public loadSync(): void {
-    this.data = this.storage.loadSync();
+    this.convict.load(this.storage.loadSync());
   }
 
   public async dump(overrideName?: string, overridePath?: string): Promise<void> {
-    await this.storage.dump(this.data, overrideName, overridePath);
+    await this.storage.dump(this.convict.get(), overrideName, overridePath);
   }
 }
