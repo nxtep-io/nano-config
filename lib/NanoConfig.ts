@@ -6,8 +6,10 @@ import * as path from 'path';
 import { NanoConfigStorage } from './NanoConfigStorage';
 import { JsonConfigStorage } from './storage';
 
+export type NanoConfigSchema<Data> = convict.Schema<Data>;
+
 export interface NanoConfigData {
-  env: string;
+  env?: string;
   [key: string]: any;
 }
 
@@ -22,7 +24,7 @@ export interface NanoConfigOptions<Data extends NanoConfigData = { env: string }
   basePath?: string;
   logger?: LoggerInstance;
   storage?: NanoConfigStorage;
-  schema?: Partial<convict.Schema<Data>>
+  schema?: Partial<NanoConfigSchema<Data>>
 }
 
 export class NanoConfig<Data extends NanoConfigData = { env: string }> {
@@ -42,7 +44,7 @@ export class NanoConfig<Data extends NanoConfigData = { env: string }> {
     });
 
     // Prepare configuration convict
-    this.convict = convict<any>({
+    this.convict = convict<Data>({
       env: {
         doc: '',
         format: ['production', 'development', 'test'],
@@ -62,7 +64,7 @@ export class NanoConfig<Data extends NanoConfigData = { env: string }> {
     // Ensure file exists before trying to laod it
     if (fs.existsSync(envFullPath)) {
       const result = dotenv.config({ path: envFullPath, debug: options.debug });
-      const config = new NanoConfig(options);
+      const config = new this(options);
 
       config.logger.debug(`Environment config loaded successfully from "${config.options.name}.env"`, {
         envName,
@@ -74,7 +76,7 @@ export class NanoConfig<Data extends NanoConfigData = { env: string }> {
     };
 
     // Initialize an empty config
-    const config = new NanoConfig(options)
+    const config = new this(options);
     config.logger.warn(`Could not locate environment file at "${config.options.name}.env"`);
     return config;
   }

@@ -1,6 +1,5 @@
 import { Logger } from 'nano-errors';
-import * as path from 'path';
-import { NanoConfig, JsonConfigStorage } from "../lib";
+import { NanoConfig } from "../lib";
 
 describe("lib.config.JsonConfigStorage", async () => {
   Logger.initialize();

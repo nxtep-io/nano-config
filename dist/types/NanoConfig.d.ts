@@ -1,8 +1,9 @@
 import * as convict from 'convict';
 import { LoggerInstance } from 'nano-errors';
 import { NanoConfigStorage } from './NanoConfigStorage';
+export declare type NanoConfigSchema<Data> = convict.Schema<Data>;
 export interface NanoConfigData {
-    env: string;
+    env?: string;
     [key: string]: any;
 }
 export interface NanoEnvFile {
@@ -17,7 +18,7 @@ export interface NanoConfigOptions<Data extends NanoConfigData = {
     basePath?: string;
     logger?: LoggerInstance;
     storage?: NanoConfigStorage;
-    schema?: Partial<convict.Schema<Data>>;
+    schema?: Partial<NanoConfigSchema<Data>>;
 }
 export declare class NanoConfig<Data extends NanoConfigData = {
     env: string;
