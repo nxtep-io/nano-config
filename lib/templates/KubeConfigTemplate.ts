@@ -20,6 +20,10 @@ export interface KubeConfigTemplateOptions<Data extends NanoConfigData> extends 
 export class KubeConfigTemplate<Data extends NanoConfigData> extends NanoConfigTemplate<Data, KubeConfigMapTemplate> {
   public options: KubeConfigTemplateOptions<Data>;
 
+  constructor(options: KubeConfigTemplateOptions<Data>) {
+    super(options);
+  }
+
   public static environment<Data extends NanoConfigData = { env: string }>
     (options: KubeConfigTemplateOptions<Data> & NanoEnvFile): KubeConfigTemplate<Data> {
     return super.environment(options) as any;
